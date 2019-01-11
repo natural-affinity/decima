@@ -1,6 +1,7 @@
 APPLICATION := $(lastword $(subst /, ,$(dir $(CURDIR))))
 PACKAGE := $(shell go list)/...
-SOURCE := $(patsubst %_test.go, %.go, $(wildcard *_test.go **/*_test.go))
+TESTS := $(wildcard *_test.go **/*_test.go)
+SRC := $(filter-out $(TESTS), $(wildcard *.go **/*.go))
 BIN := $(value GOPATH)\bin\$(APPLICATION).exe
 
 # build when changed
