@@ -53,7 +53,7 @@ func main() {
 
 	earnings := args["<earnings>"].([]string)
 	tithe := &clerk.Tithe{Percentage: percent, Extra: extra}
-	if _, err := tithe.Submit(earnings); err != nil {
+	if err := tithe.Submit(earnings); err != nil {
 		log.Fatalf("invalid earnings amount: %s", err.Error())
 	}
 

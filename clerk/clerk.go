@@ -16,6 +16,13 @@ type Tithe struct {
 	Takehome   float64
 }
 
+// Submission of tithe
+type Submission interface {
+	Print(verbose bool)
+	Submit(amounts []string) error
+	UpdateEarnings(amounts []string) error
+}
+
 // UpdateEarnings inline using amounts
 func (t *Tithe) UpdateEarnings(amounts []string) error {
 	t.Earnings = 0.0
@@ -31,18 +38,17 @@ func (t *Tithe) UpdateEarnings(amounts []string) error {
 	return nil
 }
 
-// Submit tithe and return takehome pay
-func (t *Tithe) Submit(amounts []string) (float64, error) {
+// Submit tithe and compute totals
+func (t *Tithe) Submit(amounts []string) error {
 	if err := t.UpdateEarnings(amounts); err != nil {
-		return 0, err
+		return err
 	}
 
-	// calculate totals
 	t.Amount = (t.Earnings * t.Percentage / 100.0)
 	t.Tribute = (t.Amount + t.Extra)
 	t.Takehome = (t.Earnings - t.Tribute)
 
-	return t.Takehome, nil
+	return nil
 }
 
 // Print tithe (optional takehome)
