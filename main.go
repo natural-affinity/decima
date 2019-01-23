@@ -4,8 +4,9 @@ import (
 	"log"
 	"os"
 
-	docopt "github.com/docopt/docopt-go"
 	"github.com/natural-affinity/decima/clerk"
+
+	docopt "github.com/docopt/docopt-go"
 )
 
 // Version Identifier
@@ -39,6 +40,7 @@ func main() {
 	}
 
 	// extract options and args
+	verbose := args["--breakdown"].(bool)
 	extra, err := args.Float64("--extra")
 	if err != nil {
 		log.Fatalf("invalid extra amount: %s", err.Error())
@@ -49,10 +51,13 @@ func main() {
 		log.Fatalf("invalid percentage: %s", err.Error())
 	}
 
-	amount := args["<amounts>"].([]string)
-	verbose := args["--breakdown"].(bool)
+	earnings, err := clerk.VerifyEarnings(args["<amounts>"].([]string))
+	if err != nil {
+		log.Fatalf("invalid amount: %s", err.Error())
+	}
 
-	tithe := &clerk.Tithe{Amount: amount, Percentage: percent}
-	transaction := clerk.Collect(tithe, extra)
-	transaction.Print(verbose)
+	// submit tithe and print summary
+	tithe := &clerk.Tithe{Earnings: earnings, Percentage: percent, Extra: extra}
+	receipt := tithe.Submit()
+	receipt.Print(verbose)
 }
