@@ -5,50 +5,58 @@ import (
 	"strconv"
 )
 
+// Transaction with clerk
+type Transaction struct {
+	Extra   float64
+	Tithe   *Tithe
+	Receipt *Receipt
+	Verbose bool
+}
+
 // Tithe breakdown
 type Tithe struct {
 	Percentage float64
 	Amount     []string
+	Value      float64
 }
 
 // Receipt with tithe and calcuations
 type Receipt struct {
-	Tithe   float64
-	Extra   float64
 	Total   float64
 	Savings float64
 	Tribute float64
 }
 
 // Collect tithe and issue receipt
-func Collect(t *Tithe, extra float64) *Receipt {
-	sum := 0.0
+func Collect(t *Tithe, extra float64) *Transaction {
+	r := &Receipt{}
 	for _, amount := range t.Amount {
 		f, _ := strconv.ParseFloat(amount, 64)
-		sum += f
+		r.Total += f
 	}
 
-	receipt := &Receipt{
-		Total: sum,
-		Tithe: (sum * t.Percentage / 100.0),
-		Extra: extra,
-	}
-	receipt.Savings = (sum - receipt.Tithe)
-	receipt.Tribute = (receipt.Tithe + receipt.Extra)
+	t.Value = (r.Total * t.Percentage / 100.0)
+	r.Tribute = (t.Value + extra)
+	r.Savings = (r.Total - r.Tribute)
 
-	return receipt
+	return &Transaction{Tithe: t, Receipt: r, Extra: extra}
 }
 
 // Print receipt with correct verbosity
-func (r *Receipt) Print(verbose bool) {
+func (tx *Transaction) Print(verbose bool) {
+	r := tx.Receipt
+	t := tx.Tithe
 	if verbose {
-		fmt.Printf("Savings: $%.2f -Tithe: $%.2f -Extra: $%.2f\n", r.Total, r.Tithe, r.Extra)
-		fmt.Printf("= $%.2f", r.Savings)
+		fmt.Printf("Savings: $%.2f -Tithe: $%.2f -Extra: $%.2f\n", r.Total, t.Value, tx.Extra)
+		fmt.Printf("= $%.2f\n\n", r.Savings)
+
+		fmt.Printf("Tribute: Tithe: $%.2f + Extra: $%.2f\n", t.Value, tx.Extra)
+		fmt.Printf("= $%.2f", r.Tribute)
 	} else {
-		if r.Extra == 0 {
+		if tx.Extra == 0 {
 			fmt.Printf("You owe $%.2f", r.Tribute)
 		} else {
-			fmt.Printf("You owe $%.2f (tithe: $%.2f, extra: $%.2f)", r.Tribute, r.Tithe, r.Extra)
+			fmt.Printf("You owe $%.2f (tithe: $%.2f, extra: $%.2f)", r.Tribute, t.Value, tx.Extra)
 		}
 	}
 }

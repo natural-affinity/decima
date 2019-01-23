@@ -17,7 +17,7 @@ const Usage = `
     Tithe calculator
 
   Usage:
-    decima [--percent p] [--extra e] [--breakdown] <amount>...
+    decima [--percent p] [--extra e] [--breakdown] <amounts>...
     decima --help
     decima --version
 
@@ -26,16 +26,8 @@ const Usage = `
     -v, --version       display version information
     -b, --breakdown     display detailed breakdown
     -p, --percent p     tithe percentage [default: 10]
-    -e, --extra e    	  add extra amount post-tithe
+    -e, --extra e       add extra amount post-tithe [default: 0]
 `
-
-// DecimaArgs structure
-type DecimaArgs struct {
-	Extra     float64  `docopt:"--extra"`
-	Amount    []string `docopt:"<amount>"`
-	Percent   float64  `docopt:"--percent"`
-	Breakdown bool     `docopt:"--breakdown"`
-}
 
 func main() {
 	log.SetFlags(log.Lshortfile)
@@ -46,12 +38,21 @@ func main() {
 		log.Fatalf("invalid usage string: %s", err.Error())
 	}
 
-	var dargs DecimaArgs
-	if err := args.Bind(&dargs); err != nil {
-		log.Fatalf("invalid bindings: %s", err.Error())
+	// extract options and args
+	extra, err := args.Float64("--extra")
+	if err != nil {
+		log.Fatalf("invalid extra amount: %s", err.Error())
 	}
 
-	tithe := &clerk.Tithe{Amount: dargs.Amount, Percentage: dargs.Percent}
-	receipt := clerk.Collect(tithe, dargs.Extra)
-	receipt.Print(dargs.Breakdown)
+	percent, err := args.Float64("--percent")
+	if err != nil {
+		log.Fatalf("invalid percentage: %s", err.Error())
+	}
+
+	amount := args["<amounts>"].([]string)
+	verbose := args["--breakdown"].(bool)
+
+	tithe := &clerk.Tithe{Amount: amount, Percentage: percent}
+	transaction := clerk.Collect(tithe, extra)
+	transaction.Print(verbose)
 }
