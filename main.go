@@ -18,7 +18,7 @@ const Usage = `
     Tithe calculator
 
   Usage:
-    decima [--percent p] [--extra e] [--breakdown] <amounts>...
+    decima [--percent p] [--extra e] [--breakdown] <earnings>...
     decima --help
     decima --version
 
@@ -51,13 +51,11 @@ func main() {
 		log.Fatalf("invalid percentage: %s", err.Error())
 	}
 
-	earnings, err := clerk.VerifyEarnings(args["<amounts>"].([]string))
-	if err != nil {
-		log.Fatalf("invalid amount: %s", err.Error())
+	earnings := args["<earnings>"].([]string)
+	tithe := &clerk.Tithe{Percentage: percent, Extra: extra}
+	if _, err := tithe.Submit(earnings); err != nil {
+		log.Fatalf("invalid earnings amount: %s", err.Error())
 	}
 
-	// submit tithe and print summary
-	tithe := &clerk.Tithe{Earnings: earnings, Percentage: percent, Extra: extra}
-	receipt := tithe.Submit()
-	receipt.Print(verbose)
+	tithe.Print(verbose)
 }
