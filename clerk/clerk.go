@@ -42,7 +42,7 @@ func Collect(t *Tithe, extra float64) *Receipt {
 // Print receipt with correct verbosity
 func (r *Receipt) Print(verbose bool) {
 	if verbose {
-		fmt.Printf("Savings: $%.2f -Tithe (%s): $%.2f -Extra: $%.2f\n", r.Total, r.Tithe, r.Extra)
+		fmt.Printf("Savings: $%.2f -Tithe: $%.2f -Extra: $%.2f\n", r.Total, r.Tithe, r.Extra)
 		fmt.Printf("= $%.2f", r.Savings)
 	} else {
 		if r.Extra == 0 {
