@@ -51,12 +51,16 @@ func main() {
 		log.Fatalf("invalid percentage: %s", err.Error())
 	}
 
-	earnings, err := clerk.Tally(args["<earnings>"].([]string))
-	if err != nil {
-		log.Fatalf("invalid earnings amount: %s", err.Error())
+	earnings := func() float64 {
+		total, err := clerk.Tally(args["<earnings>"].([]string))
+		if err != nil {
+			log.Fatalf("invalid earnings amount: %s", err.Error())
+		}
+
+		return total
 	}
 
-	tithe := &clerk.Tithe{Earnings: earnings, Percentage: percent, Extra: extra}
-	tithe.Submit()
+	tithe := &clerk.Tithe{Percentage: percent, Extra: extra}
+	tithe.Submit(earnings)
 	tithe.Print(verbose)
 }
