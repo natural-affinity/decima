@@ -5,6 +5,7 @@ import (
 	"os"
 
 	docopt "github.com/docopt/docopt-go"
+	"github.com/natural-affinity/decima/clerk"
 )
 
 // Version Identifier
@@ -24,18 +25,33 @@ const Usage = `
     -h, --help          display help information
     -v, --version       display version information
     -b, --breakdown     display detailed breakdown
-    -e, --extra e    	add extra amount post-tithe
     -p, --percent p     tithe percentage [default: 10]
+    -e, --extra e    	  add extra amount post-tithe
 `
+
+// DecimaArgs structure
+type DecimaArgs struct {
+	Extra     float64  `docopt:"--extra"`
+	Amount    []string `docopt:"<amount>"`
+	Percent   float64  `docopt:"--percent"`
+	Breakdown bool     `docopt:"--breakdown"`
+}
 
 func main() {
 	log.SetFlags(log.Lshortfile)
 
 	// parse usage string and collect args
-	_, err := docopt.ParseArgs(Usage, os.Args[1:], Version)
+	args, err := docopt.ParseArgs(Usage, os.Args[1:], Version)
 	if err != nil {
 		log.Fatalf("invalid usage string: %s", err.Error())
 	}
 
-	//extract options and args
+	var dargs DecimaArgs
+	if err := args.Bind(&dargs); err != nil {
+		log.Fatalf("invalid bindings: %s", err.Error())
+	}
+
+	tithe := &clerk.Tithe{Amount: dargs.Amount, Percentage: dargs.Percent}
+	receipt := clerk.Collect(tithe, dargs.Extra)
+	receipt.Print(dargs.Breakdown)
 }
