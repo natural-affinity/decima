@@ -19,7 +19,7 @@ type Tithe struct {
 
 // Submission of tithe
 type Submission interface {
-	Submit(earnings func() float64) error
+	Submit(earnings func() float64)
 	Print(verbose bool)
 }
 
@@ -46,7 +46,7 @@ func (t *Tithe) Submit(earnings func() float64) {
 	t.takehome = (t.earnings - t.tribute)
 }
 
-// Print tithe (optional takehome)
+// Print tithe (optional: detailed breakdown)
 func (t *Tithe) Print(verbose bool) {
 	fmt.Printf("You owe: $%.2f\n\n", t.tribute)
 
