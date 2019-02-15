@@ -1,0 +1,14 @@
+  Decima (la dîme)
+    Tithe calculator
+
+  Usage:
+    decima [--percent p] [--extra e] [--breakdown] <earnings>...
+    decima --help
+    decima --version
+
+  Options:
+    -h, --help          display help information
+    -v, --version       display version information
+    -b, --breakdown     display detailed breakdown
+    -p, --percent p     tithe percentage [default: 10]
+    -e, --extra e       add extra amount post-tithe [default: 0]

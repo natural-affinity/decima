@@ -1,0 +1,1 @@
+main.go:46: invalid extra amount: key: "--extra" failed type conversion: strconv.ParseFloat: parsing "abc": invalid syntax

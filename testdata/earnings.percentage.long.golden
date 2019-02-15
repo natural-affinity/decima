@@ -1,0 +1,4 @@
+Usage:
+    decima [--percent p] [--extra e] [--breakdown] <earnings>...
+    decima --help
+    decima --version

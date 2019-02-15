@@ -1,0 +1,1 @@
+main.go:51: invalid percentage: key: "--percent" failed type conversion: strconv.ParseFloat: parsing "PERCENTAGE": invalid syntax
