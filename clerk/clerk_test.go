@@ -69,12 +69,10 @@ func TestSubmitAndPrint(t *testing.T) {
 
 		if *update {
 			ioutil.WriteFile(golden, aout, 0644)
+			expected, _ = ioutil.ReadFile(golden)
 		}
 
-		expected, _ = ioutil.ReadFile(golden)
-		out := !bytes.Equal(aout, expected)
-
-		if out {
+		if !bytes.Equal(aout, expected) {
 			t.Errorf("Test: %s\n Expected: %s\n Actual: %s\n", tc.Name, aout, expected)
 		}
 	}
