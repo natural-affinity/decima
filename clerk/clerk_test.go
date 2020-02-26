@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"io/ioutil"
+	"path/filepath"
 	"testing"
 
 	"github.com/natural-affinity/decima/clerk"
@@ -56,7 +57,7 @@ func TestSubmitAndPrint(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		golden, expected := gotanda.LoadTestFile(t, "../testdata", tc.Name+".golden")
+		golden := filepath.Join("../testdata", tc.Name+".golden")
 
 		// Submit and capture results
 		tc.Tithe.Submit(func() float64 {
@@ -69,9 +70,9 @@ func TestSubmitAndPrint(t *testing.T) {
 
 		if *update {
 			ioutil.WriteFile(golden, aout, 0644)
-			expected, _ = ioutil.ReadFile(golden)
 		}
 
+		expected, _ := ioutil.ReadFile(golden)
 		if !bytes.Equal(aout, expected) {
 			t.Errorf("Test: %s\n Expected: %s\n Actual: %s\n", tc.Name, aout, expected)
 		}
